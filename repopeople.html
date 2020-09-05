@@ -1,0 +1,96 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <title>Index</title>
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <button id="button" onclick="show()" class="btn btn-light">
+        Load Github Users
+      </button>
+    </div>
+    <div id="root"></div>
+    <script>
+      function show() {
+        const app = document.getElementById("root");
+        const g = document.createElement("h1");
+
+        g.textContent = "Github Users";
+        g.setAttribute("style", "text-align: center");
+
+        const container = document.createElement("div");
+        container.setAttribute("class", "container");
+        app.appendChild(container);
+        container.appendChild(g);
+        var request = new XMLHttpRequest();
+        request.open("GET", "https://api.github.com/users", true);
+        request.onload = function () {
+          // Begin accessing JSON data here
+          var data = JSON.parse(this.response);
+          if (request.status >= 200 && request.status < 400) {
+            data.forEach((user) => {
+              const card = document.createElement("div");
+              card.setAttribute("class", "card");
+              card.setAttribute("style", "padding: 25px;");
+
+              const row = document.createElement("div");
+              row.setAttribute("class", "row");
+
+              const col1 = document.createElement("div");
+              col1.setAttribute("class", "col-sm-3 col-md-1");
+
+              const col2 = document.createElement("div");
+              col2.setAttribute("class", "col-sm-9 col-md-11");
+              col2.setAttribute("style", "padding-left: 30px;");
+
+              const logo = document.createElement("img");
+              logo.src = user.avatar_url;
+              logo.setAttribute("class", "rounded");
+              logo.setAttribute("width", "100");
+              logo.setAttribute("height", "100");
+
+              const h1 = document.createElement("p");
+              h1.textContent = "Login: " + user.login;
+
+              const id = document.createElement("p");
+              id.textContent = "ID: " + user.id;
+
+              const repo_url = document.createElement("a");
+              var link = document.createTextNode("Repositories");
+              repo_url.appendChild(link);
+              repo_url.setAttribute("class", "link");
+              repo_url.title = "View Repositories";
+              repo_url.href = user.repos_url;
+
+              container.appendChild(card);
+
+              card.appendChild(row);
+              row.appendChild(col1);
+              row.appendChild(col2);
+              col1.appendChild(logo);
+              col2.appendChild(id);
+              col2.appendChild(h1);
+              col2.appendChild(repo_url);
+            });
+          } else {
+            const errorMessage = document.createElement("marquee");
+            errorMessage.textContent = `Gah, it's not working!`;
+            app.appendChild(errorMessage);
+          }
+        };
+
+        request.send();
+      }
+    </script>
+  </body>
+</html>
